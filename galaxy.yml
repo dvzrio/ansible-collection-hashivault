@@ -1,0 +1,21 @@
+---
+namespace: dvzrio
+name: hashivault
+version: 0.1.0
+readme: README.md
+authors:
+  - Xabier Napal (github.com/xabinapal)
+description: Hashicorp Vault collection for Ansible
+license_file: LICENSE
+tags:
+  - hashicorp
+  - hashivault
+  - vault
+  - secret
+repository: https://github.com/dvzrio/ansible-collection-hashivault
+documentation: https://github.com/dvzrio/ansible-collection-hashivault
+homepage: https://github.com/dvzrio/ansible-collection-hashivault
+issues: https://github.com/dvzrio/ansible-collection-hashivault/issues
+build_ignore:
+  - .gitignore
+  - changelogs/.plugin-cache.yaml
