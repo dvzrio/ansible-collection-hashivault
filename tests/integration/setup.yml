@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: create hashivault network
+      community.docker.docker_network:
+        name: dvzrio_hashivault
+        state: present
+
+    - name: create hashivault container
+      community.docker.docker_container:
+        name: hashivault
+        image: docker.io/library/vault:{{ hashivault_version }}
+        detach: true
+        auto_remove: false
+        capabilities:
+          - IPC_LOCK
+        env:
+          VAULT_DEV_ROOT_TOKEN_ID: "{{ hashivault_root_token }}"
+          VAULT_LOCAL_CONFIG: "{\"ui\": true}"
+        network_mode: dvzrio_hashivault
+        published_ports:
+          - 8200:8200
+        container_default_behavior: no_defaults
+        state: started
