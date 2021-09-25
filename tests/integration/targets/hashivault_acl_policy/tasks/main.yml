@@ -1,0 +1,85 @@
+---
+- vars:
+    hashivault_common_parameters: &hashivault_common_parameters
+      endpoint: http://hashivault:8200
+      token: dvzrio
+  block:
+    - name: ensure test environment is clean
+      ansible.builtin.uri:
+        url: "{{ hashivault_common_parameters['endpoint'] }}/v1/sys/policies/acl/test"
+        method: DELETE
+        headers:
+          X-Vault-Token: "{{ hashivault_common_parameters['token'] }}"
+        status_code: 204
+
+    - name: create test policy
+      dvzrio.hashivault.hashivault_acl_policy:
+        <<: *hashivault_common_parameters
+        name: test
+        policy: |-
+          path "test" {
+            capabilities = ["read"]
+          }
+        state: present
+      register: result
+
+    - name: assert policy is created
+      assert:
+        that:
+          - result is changed
+
+    - name: update test policy
+      dvzrio.hashivault.hashivault_acl_policy:
+        <<: *hashivault_common_parameters
+        name: test
+        policy: |-
+          path "test" {
+            capabilities = ["create", "read"]
+          }
+        state: present
+      register: result
+
+    - name: assert policy is modified
+      assert:
+        that:
+          - result is changed
+
+    - name: update test policy with no changes
+      dvzrio.hashivault.hashivault_acl_policy:
+        <<: *hashivault_common_parameters
+        name: test
+        policy: |-
+          path "test" {
+            capabilities = ["create", "read"]
+          }
+        state: present
+      register: result
+
+    - name: assert policy is not modified
+      assert:
+        that:
+          - result is not changed
+
+    - name: delete test policy
+      dvzrio.hashivault.hashivault_acl_policy:
+        <<: *hashivault_common_parameters
+        name: test
+        state: absent
+      register: result
+
+    - name: assert policy is deleted
+      assert:
+        that:
+          - result is changed
+
+    - name: delete non existing test policy
+      dvzrio.hashivault.hashivault_acl_policy:
+        <<: *hashivault_common_parameters
+        name: test
+        state: absent
+      register: result
+
+    - name: assert task is not changed
+      assert:
+        that:
+          - result is not changed
